@@ -1,0 +1,396 @@
+package com.noum.wsclient;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.google.gson.Gson;
+import com.noum.halq.model.Ans;
+import com.noum.halq.model.AnsSheet;
+import com.noum.halq.model.Answer;
+import com.noum.halq.model.AnswerSheet;
+import com.noum.halq.model.Auditor;
+import com.noum.halq.model.Choice;
+import com.noum.halq.model.ChoiceOption;
+import com.noum.halq.model.HalqRegisterForm;
+import com.noum.halq.model.Option;
+import com.noum.halq.model.Paper;
+import com.noum.halq.model.PaperQuestion;
+import com.noum.halq.model.Question;
+import com.noum.halq.model.PaperQuestionChoice;
+
+public class RestClient {
+	// Web service url
+	// private static String url =
+	// "http://203.146.127.162:6080/hsc-rest/rest/enumber";
+//	private static String url = "http://10.0.2.2:8080/hsc-rest-1_0/resources/";
+	private static String url = "http://203.146.127.162:8080/hsc-rest-1_0/resources/";
+
+	public static int STATUS_UPLOAD_FAIL = 1;
+	public static int STATUS_UPLOAD_SUCCESS = 0;
+	
+	public int upLoad(AnswerSheet answerSheet) throws IOException{
+		int ret = STATUS_UPLOAD_SUCCESS;
+		AnsSheet ansSheet = new AnsSheet();
+		ansSheet.setAnswerSheetId(answerSheet.getAnswerSheetId());
+		ansSheet.setPaperId(answerSheet.getPaper().getPaperId());
+		ansSheet.setHalqFormId(answerSheet.getHalqForm().getFormId());
+		ansSheet.setAuditorIds(answerSheet.getAuditorIds());
+		ansSheet.setStartDateTime(answerSheet.getStartDateTime());
+		ansSheet.setFinishDateTime(answerSheet.getFinishDateTime());
+		List<Answer> answers = new ArrayList<Answer>(answerSheet.getAnswers());
+		List<Ans> anslist = new ArrayList<Ans>();
+		for (Answer answer : answers) {
+			Ans ans = new Ans();
+			ans.setAnswerId(answer.getAnswerId());
+			ans.setQuestionId(answer.getQuestionId());
+			ans.setSelectedChoiceId(answer.getSelectedChoiceId());
+			ans.setSelectedOptionIds(answer.getSelectedOptionIds());
+			ans.setRemark(answer.getRemark());
+			anslist.add(ans);
+		}
+		ansSheet.setAnswers(anslist);
+		ansSheet.setAttendances(answerSheet.getAttendances());
+		
+		String output;
+		Gson gson = new Gson();
+		String jsonStr = gson.toJson(ansSheet);
+		System.out.println(jsonStr);
+		
+		DefaultHttpClient httpClient = new DefaultHttpClient();
+		HttpPost postRequest = new HttpPost(url+"answersheets");
+		StringEntity input;
+		try {
+			input = new StringEntity(jsonStr);
+			
+			postRequest.setEntity(input);
+	 
+			HttpResponse response = httpClient.execute(postRequest);
+			int statusCode = response.getStatusLine().getStatusCode();
+			System.out.println("status code : " + statusCode);
+			if (statusCode != 201) {
+				//upload fail
+				ret = STATUS_UPLOAD_FAIL;
+			}
+			
+			BufferedReader br = new BufferedReader(
+	                        new InputStreamReader((response.getEntity().getContent())));
+	 
+			output = br.readLine();
+			System.out.println("output from server : "+output);
+			
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
+	public List<Auditor> loadAuditors() throws IOException {
+		List<Auditor> auditorList = new ArrayList<Auditor>();
+		// JSON Node names
+		JSONArray auditors = null;
+		// Creating JSON Parser instance
+		JSONParser jParser = new JSONParser();
+
+		// getting JSON string from URL
+		JSONObject json = jParser.getJSONFromUrl(url+"auditors");
+		
+		System.out.println("json length : " + json.length());
+		try{
+			auditors = json.getJSONArray("auditor");
+			for(int i = 0; i < auditors.length(); i++){
+				JSONObject obj = auditors.getJSONObject(i);
+				int auditorId = obj.getInt("auditorId");
+				String name = obj.getString("name");
+				
+				Auditor auditor = new Auditor(auditorId, name);
+				auditorList.add(auditor);
+			}
+		}catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return auditorList;
+	}
+
+	public List<Paper> loadPapers() throws IOException {
+		// TODO Auto-generated method stub
+		List<Paper> paperList = new ArrayList<Paper>();
+		// JSON Node names
+		JSONArray papers = null;
+		// Creating JSON Parser instance
+		JSONParser jParser = new JSONParser();
+
+		// getting JSON string from URL
+		JSONObject json = jParser.getJSONFromUrl(url+"papers");
+		
+		System.out.println("json length : " + json.length());
+		try{
+			papers = json.getJSONArray("paper");
+			for(int i = 0; i < papers.length(); i++){
+				JSONObject obj = papers.getJSONObject(i);
+				int paperId = obj.getInt("paperId");
+				String name = obj.getString("name");
+//				System.out.println("Paper id : " + paperId);
+//				System.out.println("Paper name : " + name);
+				Paper paper = new Paper(paperId,name);
+				paperList.add(paper);
+			}
+		}catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return paperList;
+	}
+
+	public List<Question> loadQuestions() throws IOException {
+		// TODO Auto-generated method stub
+		List<Question> questionList = new ArrayList<Question>();
+		// JSON Node names
+		JSONArray questions = null;
+		// Creating JSON Parser instance
+		JSONParser jParser = new JSONParser();
+
+		// getting JSON string from URL
+		JSONObject json = jParser.getJSONFromUrl(url+"questions");
+		
+		System.out.println("json length : " + json.length());
+		try{
+			questions = json.getJSONArray("question");
+			for(int i = 0; i < questions.length(); i++){
+				JSONObject obj = questions.getJSONObject(i);
+				int questionId = obj.getInt("id");
+				String questionText = obj.getString("questionText");
+				System.out.println("Question id : " + questionId);
+				System.out.println("Question Text : " + questionText);
+				Question question = new Question(questionId,questionText);
+				questionList.add(question);
+			}
+		}catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return questionList;
+	}
+
+	public List<PaperQuestion> loadPaperQuestions() throws IOException {
+		// TODO Auto-generated method stub
+		List<PaperQuestion> paperQuestionList = new ArrayList<PaperQuestion>();
+		// JSON Node names
+		JSONArray paperQuestions = null;
+		// Creating JSON Parser instance
+		JSONParser jParser = new JSONParser();
+
+		// getting JSON string from URL
+		JSONObject json = jParser.getJSONFromUrl(url+"paperQuestions");
+		
+		System.out.println("json length : " + json.length());
+		try{
+			paperQuestions = json.getJSONArray("paperQuestion");
+			for(int i = 0; i < paperQuestions.length(); i++){
+				JSONObject obj = paperQuestions.getJSONObject(i);
+				int paperQuestionId = obj.getInt("paperQuestionId");
+				int paperId = obj.getInt("paperId");
+				int questionId = obj.getInt("questionId");
+				System.out.println("Paper id : " + paperId);
+				System.out.println("Question id : " + questionId);
+				PaperQuestion paperQuestion = new PaperQuestion(paperQuestionId,paperId, questionId);
+				paperQuestionList.add(paperQuestion);
+
+			}
+		}catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return paperQuestionList;
+	}
+
+	public List<Choice> loadChoices() throws IOException {
+		// TODO Auto-generated method stub
+		List<Choice> choiceList = new ArrayList<Choice>();
+		// JSON Node names
+		JSONArray choices = null;
+		// Creating JSON Parser instance
+		JSONParser jParser = new JSONParser();
+
+		// getting JSON string from URL
+		JSONObject json = jParser.getJSONFromUrl(url+"choices");
+		
+		System.out.println("json length : " + json.length());
+		try{
+			choices = json.getJSONArray("choice");
+			for(int i = 0; i < choices.length(); i++){
+				JSONObject obj = choices.getJSONObject(i);
+				int choiceId = obj.getInt("choiceId");
+				String choiceText = obj.getString("choiceText");
+				System.out.println("Choice id : " + choiceId);
+				System.out.println("Choice text : " + choiceText);
+				Choice choice = new Choice(choiceId, choiceText);
+				choiceList.add(choice);
+
+			}
+		}catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return choiceList;
+	}
+
+	public List<PaperQuestionChoice> loadQuestionChoices() throws IOException {
+		// TODO Auto-generated method stub
+		List<PaperQuestionChoice> questionChoiceList = new ArrayList<PaperQuestionChoice>();
+		// JSON Node names
+		JSONArray questionChoices = null;
+		// Creating JSON Parser instance
+		JSONParser jParser = new JSONParser();
+
+		// getting JSON string from URL
+		JSONObject json = jParser.getJSONFromUrl(url+"questionChoices");
+		
+		System.out.println("json length : " + json.length());
+		try{
+			questionChoices = json.getJSONArray("questionChoice");
+			for(int i = 0; i < questionChoices.length(); i++){
+				JSONObject obj = questionChoices.getJSONObject(i);
+				int questionChoiceId = obj.getInt("questionChoiceId");
+				int questionId = obj.getInt("questionId");
+				int choiceId = obj.getInt("choiceId");
+				System.out.println("Question choice id : " + questionChoiceId);
+				System.out.println("Question id : " + questionId);
+				System.out.println("Choice id : " + choiceId);
+				PaperQuestionChoice paperQuestionChoice = new PaperQuestionChoice(questionChoiceId, questionId, choiceId);
+				questionChoiceList.add(paperQuestionChoice);		
+			}
+		}catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return questionChoiceList;
+	}
+
+	public List<Option> loadOptions() throws IOException {
+		// TODO Auto-generated method stub
+		List<Option> optionList = new ArrayList<Option>();
+		// JSON Node names
+		JSONArray options = null;
+		// Creating JSON Parser instance
+		JSONParser jParser = new JSONParser();
+
+		// getting JSON string from URL
+		JSONObject json = jParser.getJSONFromUrl(url+"options");
+		
+		System.out.println("json length : " + json.length());
+		try{
+			options = json.getJSONArray("option");
+			for(int i = 0; i < options.length(); i++){
+				JSONObject obj = options.getJSONObject(i);
+				int optionId = obj.getInt("optionId");
+				String optionText = obj.getString("optionText");
+				
+				System.out.println("Option id : " + optionId);
+				System.out.println("Option text : " + optionText);
+				Option option = new Option(optionId, optionText);
+				optionList.add(option);
+				
+			}
+		}catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return optionList;
+	}
+
+	public List<ChoiceOption> loadChoiceOptions() throws IOException {
+		// TODO Auto-generated method stub
+				List<ChoiceOption> choiceOptionList = new ArrayList<ChoiceOption>();
+				// JSON Node names
+				JSONArray choiceOptions = null;
+				// Creating JSON Parser instance
+				JSONParser jParser = new JSONParser();
+
+				// getting JSON string from URL
+				JSONObject json = jParser.getJSONFromUrl(url+"choiceOptions");
+				
+				System.out.println("json length : " + json.length());
+				try{
+					choiceOptions = json.getJSONArray("choiceOption");
+					for(int i = 0; i < choiceOptions.length(); i++){
+						JSONObject obj = choiceOptions.getJSONObject(i);
+						int optionId = obj.getInt("optionId");
+						int questionChoiceId = obj.getInt("questionChoiceId");
+						
+						
+						System.out.println("Option id : " + optionId);
+						System.out.println("QuestionChoice Id : " + questionChoiceId);
+						ChoiceOption choiceOption = new ChoiceOption(questionChoiceId, optionId);
+						choiceOptionList.add(choiceOption);
+						
+					}
+				}catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				return choiceOptionList;
+	}
+
+	public List<HalqRegisterForm> loadHalqForm() throws IOException {
+		// TODO Auto-generated method stub
+		List<HalqRegisterForm> halqFormList = new ArrayList<HalqRegisterForm>();
+		// JSON Node names
+		JSONArray forms = null;
+		// Creating JSON Parser instance
+		JSONParser jParser = new JSONParser();
+
+		// getting JSON string from URL
+		JSONObject json = jParser.getJSONFromUrl(url+"halqForms");
+		
+		System.out.println("json length : " + json.length());
+		try{
+			forms = json.getJSONArray("halqRegisterForm");
+			for(int i = 0; i < forms.length(); i++){
+				JSONObject obj = forms.getJSONObject(i);
+				HalqRegisterForm form = new HalqRegisterForm();
+				form.setFormId(obj.getInt("formId"));
+				form.setCompanyName(obj.getString("companyName"));
+				form.setOfficeAddress(obj.getString("officeAddress"));
+				form.setFactoryAddress(obj.getString("factoryAddress"));
+				form.setNumOfEmp(obj.getInt("numOfEmp"));
+				form.setNumOfMuslim(obj.getInt("numOfMuslim"));
+				form.setNumOfForeigner(obj.getInt("numOfForeigner"));
+				halqFormList.add(form);
+				
+			}
+		}catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return halqFormList;
+	}
+}

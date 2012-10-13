@@ -1,0 +1,21 @@
+<resources>
+
+    <string name="app_name">Halal Barcode Scan</string>
+
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">Halal Barcode Scan</string>
+    
+   <string name="halal_barcode_scan_instruction">คำแนะนำ</string>
+	<string name="lblBarcode">บาร์โค้ด</string>
+	<string name="lblProductName">ผลิตภัณฑ์</string>
+	<string name="lblHalalId">เลขที่ฮาลาล</string>
+	<string name="lblHalalBegin">รับรองฮาลาลวันที่</string>
+	<string name="lblHalalEnd">หมดอายุวันที่</string>
+	<string name="lblOtherInfo">ข้อมูลทั่วไป</string>
+	
+	<string name="menu_scan">สแกนบาร์โค้ด</string>
+	<string name="menu_kb_input">ป้อนบาร์โค้ด</string>
+	<string name="menu_back">ออก</string>
+	
+	<string name="promptsText">รหัสบาร์โค้ด</string>
+</resources>
