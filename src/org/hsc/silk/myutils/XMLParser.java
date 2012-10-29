@@ -1,12 +1,9 @@
 package org.hsc.silk.myutils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -24,7 +21,6 @@ import org.xml.sax.SAXException;
 public class XMLParser {
 
 	public Map<String, ProductInfo> parseProductInfo(String xmlString) {
-		List<ProductInfo> productInfoList = null;
 		Map<String,ProductInfo> pInfoMap = null;
 		try {
 			Document doc = loadXMLFromString(xmlString);

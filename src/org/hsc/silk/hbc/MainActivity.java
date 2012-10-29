@@ -1,24 +1,13 @@
 package org.hsc.silk.hbc;
 
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
-import org.hsc.silk.App;
-import org.hsc.silk.hbc.R;
-
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
-import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Log;
 
 
 public class MainActivity extends Activity {

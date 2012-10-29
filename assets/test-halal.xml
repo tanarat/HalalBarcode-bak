@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <halalInfos>
     <halalInfo>
-    	<halalId>790690051055</halalId>
-    	<product>สบู่อนาดา บริษัทฮาล คิวจำกัด</product>
-    	<validFrom>ตุลาคม 2555</validFrom>
-    	<validTo>ตุลาคม 2558</validTo>
-    	<otherInfo>ศูนย์ผู้บริโภค 085-047-5480, www.halkew.com</otherInfo>    
+    	<halalId>135170011252</halalId>
+    	<product>สบู่ดิน อันนาดา(ANADA LIQUID SOAP)</product>
+    	<validFrom>03 ธันวาคม 2554</validFrom>
+    	<validTo>02 ธันวาคม 2555</validTo>
+    	<otherInfo>สบู่ดิน "อันนาดา" ใช้ชำระนญิส หรือสิ่งสกปรก จำหน่ายโดย บริษัท ฮาลคิว จำกัด, ศูนย์ผู้บริโภค 085-047-5480, www.halkew.com</otherInfo>    
+    </halalInfo>
+    <halalInfo>
+    	<halalId>135170021252</halalId>
+    	<product>สบู่ดิน ฮาล-คลีน (HAL-KLEAN LIQUID SOAP)</product>
+    	<validFrom>03 ธันวาคม 2554</validFrom>
+    	<validTo>02 ธันวาคม 2555</validTo>
+    	<otherInfo>สบู่ดิน "ฮาล-คลีน" ใช้ชำระนญิส หรือสิ่งสกปรก จำหน่ายโดย บริษัท ฮาลคิว จำกัด, ศูนย์ผู้บริโภค 085-047-5480, www.halkew.com</otherInfo>    
     </halalInfo>
     <halalInfo>
     	<halalId>844154351055</halalId>

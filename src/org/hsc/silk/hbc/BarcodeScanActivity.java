@@ -1,27 +1,20 @@
 package org.hsc.silk.hbc;
 
 import org.hsc.silk.App;
-import org.hsc.silk.hbc.R;
 import org.hsc.silk.myutils.XMLParser;
-
-import com.example.BarcodeTest.IntentIntegrator;
-import com.example.BarcodeTest.IntentResult;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.example.BarcodeTest.IntentIntegrator;
+import com.example.BarcodeTest.IntentResult;
 
 public class BarcodeScanActivity extends Activity {
 	App myapp;

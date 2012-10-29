@@ -1,15 +1,12 @@
 package org.hsc.silk;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
 import org.hsc.silk.hbc.ProductInfo;
-import org.hsc.silk.myutils.JSONParser;
 import org.hsc.silk.myutils.XMLParser;
-import org.json.JSONObject;
 
 import android.app.Application;
 import android.util.Log;
